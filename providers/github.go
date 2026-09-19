@@ -11,10 +11,12 @@ import (
 )
 
 type GithubService struct {
-	Token string
+	Username string
+	Token *string
+	Url *string
 }
 
-func (g GithubService) GetCommits(username string, from time.Time, to time.Time) ([]data.Commit, error) {
+func (g GithubService) GetCommits(from time.Time, to time.Time) ([]data.Commit, error) {
 	var result struct {
 		Items []struct {
 			SHA string `json:"sha"`
@@ -36,7 +38,7 @@ func (g GithubService) GetCommits(username string, from time.Time, to time.Time)
 	var commits []data.Commit
 
 	for i := 1; ;i++ {
-		resp, err := http.Get(fmt.Sprintf(requestString,username,from.Format("2006-01-02"),to.Format("2006-01-02"),i))
+		resp, err := http.Get(fmt.Sprintf(requestString,g.Username,from.Format("2006-01-02"),to.Format("2006-01-02"),i))
 		if err != nil {
 			println(err.Error())
 			return nil,err

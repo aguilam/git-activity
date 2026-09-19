@@ -7,26 +7,27 @@ import (
 
 	svg "github.com/ajstarks/svgo"
 
+	"github.com/aguilam/git-activity/config"
 	"github.com/aguilam/git-activity/data"
-	"github.com/aguilam/git-activity/providers"
 	"github.com/aguilam/git-activity/svgbuilder"
 )
 
 
 
 func main() {
+	configPath := os.Args[1]
+	configBytes, err := os.ReadFile(configPath)
+	if err != nil {
+		panic(err)
+	}
+	services := config.ParseConfig(configBytes)
+
 	from := time.Date(2026,time.January,1,0,0,0,0,time.Local)
 	to := time.Date(2026,time.December,30,23,59,59,0,time.Local)
-	services := []providers.ServiceScheme{
-		{
-			Username: "aguilam",
-			Git: &providers.GithubService{},
-		},
-	}
 
 	datedCommits := map[string][]data.Commit{}
 	for _, service := range services {
-		result, err := service.Git.GetCommits(service.Username,from,to)
+		result, err := service.GetCommits(from,to)
 		if err != nil {
 			println(err.Error())
 			continue

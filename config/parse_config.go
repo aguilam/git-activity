@@ -10,7 +10,10 @@ func ParseConfig(file []byte) ([]providers.GitService) {
 		"github": func(username string, token *string, url *string) providers.GitService {
 			return providers.GithubService{Username: username, Token: token, Url: url}
 		},
-	}
+		"gitlab": func(username string, token, url *string) providers.GitService {
+			return providers.GitlabService{Username: username, Token: token, Url: url}
+		},
+ 	}
 
 	var config Config
 	err := yaml.Unmarshal(file,&config)

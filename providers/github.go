@@ -45,6 +45,8 @@ func (g GithubService) GetCommits(from time.Time, to time.Time) ([]data.Commit, 
 		}
 
 		err = json.NewDecoder(resp.Body).Decode(&result)
+
+		resp.Body.Close()
 		for _, item := range result.Items {
 			date, err := time.Parse(time.RFC3339,item.Commit.Author.Date)
 			if err != nil {

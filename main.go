@@ -41,11 +41,19 @@ func main() {
 
 	current := from
 	weekDays := map[int]int{}
-	file, _ := os.Create("activity.svg")
+
+	err = os.MkdirAll("dist/images", 0755)
+	if err != nil {
+	    panic(err)
+	}
+	file, err := os.Create("dist/images/activity_750x150.svg")
+	if err != nil {
+	    panic(err)
+	}
 	defer file.Close()
 
 	canvas := svg.New(file)
-	canvas.Start(723,113)
+	canvas.Start(750,150)
 	
 	for current.Before(to){
 		currentWeekDay := int(current.Weekday())

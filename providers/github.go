@@ -64,3 +64,8 @@ func (g GithubService) GetCommits(from time.Time, to time.Time) ([]data.Commit, 
 
 	return commits, nil
 }
+
+func (g GithubService) 	GetServiceInfo() GitServiceInfo {
+	url := fmt.Sprintf("https://github.com/%s",g.Username)
+	return GitServiceInfo{Type: "github",Username: g.Username, Url: &url}
+}

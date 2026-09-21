@@ -13,7 +13,7 @@ import (
 type GitlabService struct {
 	Username string
 	Token *string
-	Url *string
+	Url string
 }
 
 func (g GitlabService) GetCommits(from time.Time, to time.Time) ([]data.Commit, error) {
@@ -84,4 +84,9 @@ func (g GitlabService) GetCommits(from time.Time, to time.Time) ([]data.Commit, 
 		}
 	}
 	return commits, nil
+}
+
+func (g GitlabService) 	GetServiceInfo() GitServiceInfo {
+	url := fmt.Sprintf("%s/%s",g.Url,g.Username)
+	return GitServiceInfo{Type: "gitlab",Username: g.Username, Url: &url}
 }

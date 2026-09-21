@@ -67,6 +67,15 @@ func main() {
 		weekDays[currentWeekDay]++
 		current = current.AddDate(0,0,1)
 	}
+	canvas.Text(0,95,"Based on Git services: ",`fill="white"`)
+	var finalX int
+	for i, service := range services {
+		currentX := 13 * i + finalX 
+		serviceInfo := service.GetServiceInfo()
+		text := fmt.Sprintf("%s %s",serviceInfo.Type, *serviceInfo.Url)
+		canvas.Text(currentX,110,text,`fill="white"`)
+		finalX = currentX + len(text) * 8
+	}
 	canvas.End()
 
 }

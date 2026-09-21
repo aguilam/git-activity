@@ -11,7 +11,13 @@ func ParseConfig(file []byte) ([]providers.GitService) {
 			return providers.GithubService{Username: username, Token: token, Url: url}
 		},
 		"gitlab": func(username string, token, url *string) providers.GitService {
-			return providers.GitlabService{Username: username, Token: token, Url: url}
+			var serverUrl string
+			if url != nil {
+				serverUrl = *url
+			} else {
+				serverUrl = "https://gitlab.com"
+			}
+			return providers.GitlabService{Username: username, Token: token, Url: serverUrl}
 		},
  	}
 

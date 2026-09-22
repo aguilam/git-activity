@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"time"
-
-	svg "github.com/ajstarks/svgo"
 
 	"github.com/aguilam/git-activity/config"
 	"github.com/aguilam/git-activity/data"
@@ -24,10 +21,13 @@ func main() {
 
 	from := time.Date(2026,time.January,1,0,0,0,0,time.Local)
 	to := time.Date(2026,time.December,30,23,59,59,0,time.Local)
+	nowDate := time.Now()
 
+	yearAgo := nowDate.AddDate(-1,0,0)
 	datedCommits := map[string][]data.Commit{}
+
 	for _, service := range services {
-		result, err := service.GetCommits(from,to)
+		result, err := service.GetCommits(yearAgo,to)
 		if err != nil {
 			println(err.Error())
 			continue
@@ -39,43 +39,8 @@ func main() {
 		}
 	}
 
-	current := from
-	weekDays := map[int]int{}
+	svgbuilder.BuildSVG(from,to,datedCommits,services,"year_activity_750_150.svg")
 
-	err = os.MkdirAll("dist/images", 0755)
-	if err != nil {
-	    panic(err)
-	}
-	file, err := os.Create("dist/images/activity_750x150.svg")
-	if err != nil {
-	    panic(err)
-	}
-	defer file.Close()
 
-	canvas := svg.New(file)
-	canvas.Start(750,150)
-	
-	for current.Before(to){
-		currentWeekDay := int(current.Weekday())
-		date := current.Format("2006-01-02")
-		commits := datedCommits[date]
-		commitDayСount := weekDays[currentWeekDay]
-		
-		color := svgbuilder.GetCommitColor(len(commits))
-		canvas.Rect(12 * commitDayСount,12 * currentWeekDay, 10, 10, fmt.Sprintf(`fill="%s" stroke="black" stroke-width="0.5" rx="2"`, color))
-
-		weekDays[currentWeekDay]++
-		current = current.AddDate(0,0,1)
-	}
-	canvas.Text(0,95,"Based on Git services: ",`fill="white"`)
-	var finalX int
-	for i, service := range services {
-		currentX := 13 * i + finalX 
-		serviceInfo := service.GetServiceInfo()
-		text := fmt.Sprintf("%s %s",serviceInfo.Type, *serviceInfo.Url)
-		canvas.Text(currentX,110,text,`fill="white"`)
-		finalX = currentX + len(text) * 8
-	}
-	canvas.End()
-
+	svgbuilder.BuildSVG(yearAgo,nowDate,datedCommits,services,"current_activity_750_150.svg")
 }

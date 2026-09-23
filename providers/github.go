@@ -38,12 +38,21 @@ func (g GithubService) GetCommits(from time.Time, to time.Time) ([]data.Commit, 
 	var commits []data.Commit
 
 	for i := 1; ;i++ {
-		resp, err := http.Get(fmt.Sprintf(requestString,g.Username,from.Format("2006-01-02"),to.Format("2006-01-02"),i))
+		req, err := http.NewRequest("GET",fmt.Sprintf(requestString,g.Username,from.Format("2006-01-02"),to.Format("2006-01-02"),i),nil)
+		
 		if err != nil {
 			println(err.Error())
 			return nil,err
 		}
+		if (g.Token != nil) {
+			req.Header.Set("Authorization", "Bearer " + *g.Token)
+		}
 
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			println(err.Error())
+			return nil,err
+		}
 		err = json.NewDecoder(resp.Body).Decode(&result)
 
 		resp.Body.Close()
@@ -61,7 +70,6 @@ func (g GithubService) GetCommits(from time.Time, to time.Time) ([]data.Commit, 
 			break
 		}
 	}
-
 	return commits, nil
 }
 

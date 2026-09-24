@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: "1.26.4"
+
+      - name: Build
+        run: go build -o git-activity .
+
+      - name: Release
+        run: gh release create "$GITHUB_REF_NAME" git-activity
+        env:
+          GH_TOKEN: ${{ github.token }}

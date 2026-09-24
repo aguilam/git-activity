@@ -1,0 +1,50 @@
+name: Git Activity Deploy
+
+on:
+  workflow_call:
+    secrets:
+      config:
+        required: true
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download executable
+        run: gh release download --repo aguilam/git-activity --pattern "git-activity"
+        env: 
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Create config
+        env:
+          CONFIG: ${{ secrets.config }}
+        run: |
+          printf '%s' "$CONFIG" > config.yml
+
+      - name: Generate assets
+        run: |
+          chmod +x git-activity
+          ./git-activity config.yml
+
+      - name: Upload Pages
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

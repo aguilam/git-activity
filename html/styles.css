@@ -1,0 +1,15 @@
+body {
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+.activity-sheet {
+    
+}
+
+.activity-cell {
+    width: 10px;
+    height: 10px;
+    border: 1px solid #000000;
+    border-radius: 2px;
+}

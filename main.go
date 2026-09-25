@@ -6,6 +6,7 @@ import (
 
 	"github.com/aguilam/git-activity/config"
 	"github.com/aguilam/git-activity/data"
+	"github.com/aguilam/git-activity/html"
 	"github.com/aguilam/git-activity/svgbuilder"
 )
 
@@ -40,7 +41,7 @@ func main() {
 	}
 
 	svgbuilder.BuildSVG(from,to,datedCommits,services,"year_activity_750_150.svg")
-
-
 	svgbuilder.BuildSVG(yearAgo,nowDate,datedCommits,services,"current_activity_750_150.svg")
+
+	html.BuildHTML(datedCommits)
 }

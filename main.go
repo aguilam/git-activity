@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"sync"
 	"time"
 
 	"github.com/aguilam/git-activity/config"
@@ -26,22 +27,36 @@ func main() {
 
 	yearAgo := nowDate.AddDate(-1,0,0)
 	datedCommits := map[string][]data.Commit{}
-
-	for _, service := range services {
-		result, err := service.GetCommits(yearAgo,to)
-		if err != nil {
-			println(err.Error())
-			continue
-		}
-
+	results := make([][]data.Commit,len(services))
+	var wg sync.WaitGroup
+	
+	for i, service := range services {
+		wg.Go(func(){
+			result, err := service.GetCommits(yearAgo,to)
+			if err != nil {
+				println(err.Error())
+				return
+			}
+			results[i] = result
+		})
+	}
+	wg.Wait()
+	for _, result := range results {
 		for _, commit := range result {
 			date := commit.Date.Format("2006-01-02")
 			datedCommits[date] = append(datedCommits[date], commit)
 		}
 	}
 
-	svgbuilder.BuildSVG(from,to,datedCommits,services,"year_activity_750_150.svg")
-	svgbuilder.BuildSVG(yearAgo,nowDate,datedCommits,services,"current_activity_750_150.svg")
-
-	html.BuildHTML(datedCommits)
+	wg.Go(func(){
+		svgbuilder.BuildSVG(from,to,datedCommits,services,"year_activity_750_150.svg")
+	})
+	wg.Go(func(){
+		svgbuilder.BuildSVG(yearAgo,nowDate,datedCommits,services,"current_activity_750_150.svg")
+	})
+	wg.Go(func(){
+		html.BuildHTML(datedCommits)
+	})
+	
+	wg.Wait()
 }

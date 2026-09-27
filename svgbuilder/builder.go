@@ -3,6 +3,7 @@ package svgbuilder
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/aguilam/git-activity/data"
@@ -10,6 +11,31 @@ import (
 	svg "github.com/ajstarks/svgo"
 )
 
+func addPattern(canvas *svg.SVG, id string, colors []string) {
+	canvas.Def()
+	width := len(colors) * 3
+
+	canvas.Pattern(
+		id,
+		0, 0,
+		width, width,
+		"user",
+		`patternTransform="rotate(45)"`,
+	)
+
+	for i, color := range colors {
+		canvas.Rect(
+			i*4,
+			0,
+			4,
+			width,
+			fmt.Sprintf(`fill="%s"`, color),
+		)
+	}
+
+	canvas.PatternEnd()
+	canvas.DefEnd()
+}
 
 func BuildSVG (from time.Time, to time.Time, datedCommits map[string][]data.Commit, services []providers.GitService, filename string) {
 	current := from
@@ -32,10 +58,27 @@ func BuildSVG (from time.Time, to time.Time, datedCommits map[string][]data.Comm
 		currentWeekDay := int(current.Weekday())
 		date := current.Format("2006-01-02")
 		commits := datedCommits[date]
-		commitDayСount := weekDays[currentWeekDay]
+		commitDayCount := weekDays[currentWeekDay]
 		
-		color := GetCommitColor(len(commits))
-		canvas.Rect(12 * commitDayСount,12 * currentWeekDay, 10, 10, fmt.Sprintf(`fill="%s" stroke="black" stroke-width="0.5" rx="2"`, color))
+		colors := GetCommitColor(commits)
+		if len(colors) > 1 {
+			patternID := fmt.Sprintf("stripe-%s", strings.ReplaceAll(strings.Join(colors, "-"),"#","-"))
+
+			addPattern(canvas, patternID, colors)
+	
+			canvas.Rect(
+				12*commitDayCount,
+				12*currentWeekDay,
+				10,
+				10,
+				fmt.Sprintf(
+					`fill="url(#%s)" stroke="black" stroke-width="0.5" rx="2"`,
+					patternID,
+				),
+			)
+		} else {
+			canvas.Rect(12 * commitDayCount,12 * currentWeekDay, 10, 10, fmt.Sprintf(`fill="%s" stroke="black" stroke-width="0.5" rx="2"`, colors[0]))
+		}
 
 		weekDays[currentWeekDay]++
 		current = current.AddDate(0,0,1)

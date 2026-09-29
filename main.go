@@ -20,12 +20,16 @@ func main() {
 		panic(err)
 	}
 	services := config.ParseConfig(configBytes)
-
+	// Count leap year
 	from := time.Date(2026,time.January,1,0,0,0,0,time.Local)
-	to := time.Date(2026,time.December,30,23,59,59,0,time.Local)
+	to := time.Date(2026,time.December,31,23,59,59,0,time.Local)
 	nowDate := time.Now()
 
 	yearAgo := nowDate.AddDate(-1,0,0)
+	weekDay := int(yearAgo.Weekday())
+	if (weekDay > 0) {
+		yearAgo = yearAgo.AddDate(0,0, -weekDay)
+	}
 	datedCommits := map[string][]data.Commit{}
 	results := make([][]data.Commit,len(services))
 	var wg sync.WaitGroup

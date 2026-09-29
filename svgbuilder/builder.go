@@ -39,7 +39,6 @@ func addPattern(canvas *svg.SVG, id string, colors []string) {
 
 func BuildSVG (from time.Time, to time.Time, datedCommits map[string][]data.Commit, services []providers.GitService, filename string) {
 	current := from
-	weekDays := map[int]int{}
 
 	err := os.MkdirAll("dist/images", 0755)
 	if err != nil {
@@ -52,14 +51,29 @@ func BuildSVG (from time.Time, to time.Time, datedCommits map[string][]data.Comm
 	defer file.Close()
 
 	canvas := svg.New(file)
-	canvas.Start(750,150)
-	
+	canvas.Start(650,200)
+	var lastMonth int
+	var lastWeekStart time.Time
+	weekCounter := -1
 	for current.Before(to){
 		currentWeekDay := int(current.Weekday())
+		currentMonth := int(current.Month())
+
 		date := current.Format("2006-01-02")
 		commits := datedCommits[date]
-		commitDayCount := weekDays[currentWeekDay]
-		
+
+		weekStart := current.AddDate(0, 0, -currentWeekDay)
+		if lastWeekStart.IsZero() || !weekStart.Equal(lastWeekStart) {
+			lastWeekStart = weekStart
+			weekCounter++
+		}
+
+		nextWeekMonth :=int(weekStart.AddDate(0,0,7).Month())
+		if currentMonth != lastMonth && nextWeekMonth == currentMonth {
+			lastMonth = currentMonth
+			canvas.Text(12 * weekCounter + 1,12,current.Format("Jan"),`fill="white"`)
+		}
+
 		colors := GetCommitColor(commits)
 		if len(colors) > 1 {
 			patternID := fmt.Sprintf("stripe-%s", strings.ReplaceAll(strings.Join(colors, "-"),"#","-"))
@@ -67,8 +81,8 @@ func BuildSVG (from time.Time, to time.Time, datedCommits map[string][]data.Comm
 			addPattern(canvas, patternID, colors)
 	
 			canvas.Rect(
-				12*commitDayCount,
-				12*currentWeekDay,
+				12 * weekCounter,
+				16 + 12*currentWeekDay,
 				10,
 				10,
 				fmt.Sprintf(
@@ -77,19 +91,18 @@ func BuildSVG (from time.Time, to time.Time, datedCommits map[string][]data.Comm
 				),
 			)
 		} else {
-			canvas.Rect(12 * commitDayCount,12 * currentWeekDay, 10, 10, fmt.Sprintf(`fill="%s" stroke="black" stroke-width="0.5" rx="2"`, colors[0]))
+			canvas.Rect(12 * weekCounter,16 + 12*currentWeekDay, 10, 10, fmt.Sprintf(`fill="%s" stroke="black" stroke-width="0.5" rx="2"`, colors[0]))
 		}
 
-		weekDays[currentWeekDay]++
 		current = current.AddDate(0,0,1)
 	}
-	canvas.Text(0,95,"Based on Git services: ",`fill="white"`)
+	canvas.Text(0,115,"Based on Git services: ",`fill="white"`)
 	var finalX int
 	for i, service := range services {
 		currentX := 13 * i + finalX 
 		serviceInfo := service.GetServiceInfo()
 		text := fmt.Sprintf("%s %s",serviceInfo.Type, *serviceInfo.Url)
-		canvas.Text(currentX,110,text,`fill="white"`)
+		canvas.Text(currentX,130,text,`fill="white"`)
 		finalX = currentX + len(text) * 8
 	}
 	canvas.End()

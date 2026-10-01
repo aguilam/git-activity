@@ -98,12 +98,18 @@ func BuildSVG (from time.Time, to time.Time, datedCommits map[string][]data.Comm
 	}
 	canvas.Text(0,115,"Based on Git services: ",`fill="white"`)
 	var finalX int
-	for i, service := range services {
-		currentX := 13 * i + finalX 
+	textLines := 0
+	for _, service := range services {
+		currentX :=  finalX + 13
 		serviceInfo := service.GetServiceInfo()
 		text := fmt.Sprintf("%s %s",serviceInfo.Type, *serviceInfo.Url)
-		canvas.Text(currentX,130,text,`fill="white"`)
-		finalX = currentX + len(text) * 8
+		textWidth := len(text) * 7
+		if textWidth + currentX + 5 > 650{
+			textLines++
+			currentX = 13
+		}
+		canvas.Text(currentX,140 + 20 * textLines,text,`fill="white"`)
+		finalX = currentX + textWidth
 	}
 	canvas.End()
 }

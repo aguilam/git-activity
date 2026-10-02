@@ -82,7 +82,7 @@ func BuildSVG (from time.Time, to time.Time, datedCommits map[string][]data.Comm
 	
 			canvas.Rect(
 				12 * weekCounter,
-				16 + 12*currentWeekDay,
+				16 + 12 * currentWeekDay,
 				10,
 				10,
 				fmt.Sprintf(

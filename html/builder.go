@@ -1,6 +1,7 @@
 package html
 
 import (
+	"html/template"
 	"os"
 
 	"github.com/aguilam/git-activity/data"
@@ -11,17 +12,23 @@ func BuildHTML(commits map[string][]data.Commit) {
 	if err != nil {
 		panic(err)
 	}
-	file, err := os.ReadFile("html/template.html")
+	templ, err := template.ParseFiles("html/template.html")
 	if err != nil {
 		panic(err)
 	}
 
-	err = os.WriteFile("dist/index.html",file,0644)
+	distFile, err := os.Create("dist/index.html")
+	if err != nil {
+		panic(err)
+	}
+	defer distFile.Close()
+
+	err = templ.Execute(distFile,commits)
 	if err != nil {
 		panic(err)
 	}
 
-	file, err = os.ReadFile("html/styles.css")
+	file, err := os.ReadFile("html/styles.css")
 	if err != nil {
 		panic(err)
 	}

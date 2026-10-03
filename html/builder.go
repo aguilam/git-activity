@@ -26,8 +26,15 @@ func BuildHTML(commits map[string][]data.Commit) {
 	if (weekDay > 0) {
 		yearAgo = yearAgo.AddDate(0,0, -weekDay)
 	}
+	var activity Activities
+
+	activity.CurrentActivity = diagramBuilder(yearAgo,nowDate,commits)
+
+	from := time.Date(2026,time.January,1,0,0,0,0,time.Local)
+	to := time.Date(2026,time.December,31,23,59,59,0,time.Local)
+	lastActivity := diagramBuilder(from,to,commits)
+	activity.YearActivities = append(activity.YearActivities,lastActivity)
 	
-	activity := diagramBuilder(yearAgo,nowDate,commits)
 	templ := template.Must(
 		template.New("template.html").
 			Funcs(template.FuncMap{

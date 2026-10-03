@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <title>Git Activity</title>
-</head>
-<body>
-    <p>Last activity</p>
+{{define "activity-sheet"}}
     <div class="month-sheet">
         {{ range .Months }}
             <div
@@ -27,14 +15,32 @@
                 {{range .Days}}
                     {{if .}}
                         <div class="day-cell" style="{{ dayBackground .Colors}}" ></div>
+                    {{ else }}
+                        <div style="height: 12px; width: 12px;"></div>
                     {{end}}
                 {{end}}
             </div>
         {{ end }}
     </div>
+{{ end }}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Git Activity</title>
+</head>
+<body>
+    <p>Last activity</p>
+        {{ template "activity-sheet" .CurrentActivity}}
     <p>2026 Year activity</p>
-    <div class="activity-sheet">
-        <img src="./images/year_activity_750_150.svg" alt="">
-    </div>
+        {{ range .YearActivities}}
+            {{ template "activity-sheet" .}}
+        {{ end }}
 </body>
 </html>

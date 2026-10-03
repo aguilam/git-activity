@@ -3,13 +3,30 @@ body {
     font-optical-sizing: auto;
     font-style: normal;
 }
-.activity-sheet {
-    
+.month-sheet {
+    display: flex;
+    position: relative;
+    height: 20px;
 }
 
-.activity-cell {
+.month-label {
+    position: absolute;
+}
+
+.activity-sheet {
+    display: flex;
+    gap: 1px;
+}
+
+.week-sheet {
+    display: flex;
+    gap: 1px;
+    flex-direction: column;
+}
+
+.day-cell {
     width: 10px;
     height: 10px;
-    border: 1px solid #000000;
-    border-radius: 2px;
+    border: 0.5px solid #000000;
+    border-radius: 3px;
 }

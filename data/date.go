@@ -1,15 +1,21 @@
 package data
 
 type Day struct {
-	colors  []string
-	commits []*Commit
+	Enabled bool
+	Colors  []string
+	Commits *[]Commit
 }
 
 type Week struct {
-	days [7][]*Day
+	Days [7]*Day
 }
 
 type MonthLabel struct {
-	name       string
-	weekNumber int
+	Name       string
+	WeekNumber int
+}
+
+type ActivityData struct {
+	Months []MonthLabel
+	Weeks  []Week
 }

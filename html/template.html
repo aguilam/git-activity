@@ -11,8 +11,26 @@
 </head>
 <body>
     <p>Last activity</p>
+    <div class="month-sheet">
+        {{ range .Months }}
+            <div
+                class="month-label"
+                style="left: calc({{ .WeekNumber }} * 13px);"
+            >
+                {{ .Name }}
+            </div>
+        {{ end }}
+    </div>
     <div class="activity-sheet">
-        <img src="./images/current_activity_750_150.svg" alt="">
+        {{ range .Weeks}}
+            <div class="week-sheet">
+                {{range .Days}}
+                    {{if .}}
+                        <div class="day-cell" style="{{ dayBackground .Colors}}" ></div>
+                    {{end}}
+                {{end}}
+            </div>
+        {{ end }}
     </div>
     <p>2026 Year activity</p>
     <div class="activity-sheet">

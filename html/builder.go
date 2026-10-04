@@ -1,12 +1,16 @@
 package html
 
 import (
+	"embed"
 	"html/template"
 	"os"
 	"time"
 
 	"github.com/aguilam/git-activity/data"
 )
+
+//go:embed template.html styles.css
+var embeddedFiles embed.FS
 
 func BuildHTML(commits map[string][]data.Commit) {
 	err := os.MkdirAll("dist", 0755)
@@ -40,7 +44,7 @@ func BuildHTML(commits map[string][]data.Commit) {
 			Funcs(template.FuncMap{
 				"dayBackground": dayBackground,
 			}).
-			ParseFiles("html/template.html"),
+			ParseFS(embeddedFiles,"template.html"),
 	)
 	err = templ.Execute(distFile,activity)
 
@@ -48,7 +52,7 @@ func BuildHTML(commits map[string][]data.Commit) {
 		panic(err)
 	}
 
-	file, err := os.ReadFile("html/styles.css")
+	file, err := embeddedFiles.ReadFile("styles.css")
 	if err != nil {
 		panic(err)
 	}

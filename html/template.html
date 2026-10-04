@@ -3,22 +3,33 @@
         {{ range .Months }}
             <div
                 class="month-label"
-                style="left: calc({{ .WeekNumber }} * 13px);"
+                style="left: calc({{ .WeekNumber }} * 11px);"
             >
                 {{ .Name }}
             </div>
         {{ end }}
     </div>
     <div class="activity-sheet">
-        {{ range .Weeks}}
+        {{ range $weekIndex, $week := .Weeks }}
             <div class="week-sheet">
-                {{range .Days}}
-                    {{if .}}
-                        <div class="day-cell" style="{{ dayBackground .Colors}}" ></div>
+                {{ range $dayIndex, $day := $week.Days }}
+                    {{ if $day }}
+                        <button
+                            class="day-cell"
+                            style="{{ dayBackground $day.Colors }}"
+                            popovertarget="day-{{printf "%p" $day}}"
+                        ></button>
+                        {{ if gt (len $day.Commits) 0 }}
+                            <div class="popover" popover id="day-{{printf "%p" $day}}">
+                                {{ range $day.Commits }}
+                                    <a href="{{.CommitUrl}}">{{.Message}}</a>
+                                {{ end }}
+                            </div>
+                        {{ end }}
                     {{ else }}
-                        <div style="height: 12px; width: 12px;"></div>
-                    {{end}}
-                {{end}}
+                        <div style="width: 10px; height: 10px;"></div>
+                    {{ end }}
+                {{ end }}
             </div>
         {{ end }}
     </div>
@@ -42,5 +53,8 @@
         {{ range .YearActivities}}
             {{ template "activity-sheet" .}}
         {{ end }}
+    <footer>
+        <p>Created with <a href="https://github.com/aguilam/git-activity">Git Activity</a></p>
+    </footer>
 </body>
 </html>

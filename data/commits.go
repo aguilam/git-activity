@@ -3,6 +3,7 @@ package data
 import (
 	"time"
 )
+
 type Commit struct {
 	GitService string
 	Repository string

@@ -20,8 +20,8 @@ func (g GithubService) GetCommits(from time.Time, to time.Time) ([]data.Commit, 
 	var result struct {
 		Items []struct {
 			SHA string `json:"sha"`
+			Url string `json:"html_url"`
 			Commit struct {
-				Url string `json:"url"`
 				Message string `json:"message"`
 				Author struct {
 					Date string `json:"date"`
@@ -62,7 +62,7 @@ func (g GithubService) GetCommits(from time.Time, to time.Time) ([]data.Commit, 
 				println(err.Error())
 				continue
 			}
-			commits = append(commits, data.Commit{GitService: "github",Repository: item.Repository.Name, SHA: item.SHA, Date: date,Message: item.Commit.Message, CommitUrl: item.Commit.Url})
+			commits = append(commits, data.Commit{GitService: "github",Repository: item.Repository.Name, SHA: item.SHA, Date: date,Message: item.Commit.Message, CommitUrl: item.Url})
 		}
 
 		link := resp.Header.Get("Link")

@@ -1,37 +1,41 @@
 {{define "activity-sheet"}}
-    <div class="month-sheet">
-        {{ range .Months }}
-            <div
-                class="month-label"
-                style="left: calc({{ .WeekNumber }} * 11px);"
-            >
-                {{ .Name }}
-            </div>
-        {{ end }}
-    </div>
-    <div class="activity-sheet">
-        {{ range $weekIndex, $week := .Weeks }}
-            <div class="week-sheet">
-                {{ range $dayIndex, $day := $week.Days }}
-                    {{ if $day }}
-                        <button
-                            class="day-cell"
-                            style="{{ dayBackground $day.Colors }}"
-                            popovertarget="day-{{printf "%p" $day}}"
-                        ></button>
-                        {{ if gt (len $day.Commits) 0 }}
-                            <div class="popover" popover id="day-{{printf "%p" $day}}">
-                                {{ range $day.Commits }}
-                                    <a href="{{.CommitUrl}}">{{.Message}}</a>
-                                {{ end }}
-                            </div>
-                        {{ end }}
-                    {{ else }}
-                        <div style="width: 10px; height: 10px;"></div>
-                    {{ end }}
+    <div class="activity-scroll">
+        <div class="activity-content">
+            <div class="month-sheet">
+                {{ range .Months }}
+                    <div
+                        class="month-label"
+                        style="left: calc({{ .WeekNumber }} * 11px);"
+                    >
+                        {{ .Name }}
+                    </div>
                 {{ end }}
             </div>
-        {{ end }}
+            <div class="activity-sheet">
+                {{ range $weekIndex, $week := .Weeks }}
+                    <div class="week-sheet">
+                        {{ range $dayIndex, $day := $week.Days }}
+                            {{ if $day }}
+                                <button
+                                    class="day-cell"
+                                    style="{{ dayBackground $day.Colors }}"
+                                    popovertarget="day-{{printf "%p" $day}}"
+                                ></button>
+                                {{ if gt (len $day.Commits) 0 }}
+                                    <div class="popover" popover id="day-{{printf "%p" $day}}">
+                                        {{ range $day.Commits }}
+                                            <a href="{{.CommitUrl}}">{{.Message}}</a>
+                                        {{ end }}
+                                    </div>
+                                {{ end }}
+                            {{ else }}
+                                <div style="width: 10px; height: 10px;"></div>
+                            {{ end }}
+                        {{ end }}
+                    </div>
+                {{ end }}
+            </div>
+        </div>
     </div>
 {{ end }}
 
@@ -47,12 +51,26 @@
     <title>Git Activity</title>
 </head>
 <body>
-    <p>Last activity</p>
+    <input type="checkbox" id="theme-toggle" class="theme-checkbox">
+  
+    <label for="theme-toggle" class="theme-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-moon preview-icon">
+            <path d="M12 2v2"/>
+            <path d="M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715"/>
+            <path d="M16 12a4 4 0 0 0-4-4"/>
+            <path d="m19 5-1.256 1.256"/>
+            <path d="M20 12h2"/>
+        </svg>
+    </label>
+    <main>
+        <strong>Last activity</strong>
         {{ template "activity-sheet" .CurrentActivity}}
-    <p>2026 Year activity</p>
+        <strong>2026 Year activity</strong>
         {{ range .YearActivities}}
             {{ template "activity-sheet" .}}
         {{ end }}
+    </main>
+
     <footer>
         <p>Created with <a href="https://github.com/aguilam/git-activity">Git Activity</a></p>
     </footer>

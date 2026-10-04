@@ -1,8 +1,101 @@
+:root {
+    color-scheme: light dark;
+
+    --bg: light-dark(oklch(0.958 0.006 264.532),oklch(0.243 0.030 283.911));
+    --secondary-bg: light-dark(oklch(0.933 0.009 264.521),oklch(0.216 0.025 284.065));
+
+    --text: light-dark(oklch(0.435 0.043 279.325),oklch(0.879 0.043 272.277));
+    --secondary-text: light-dark(oklch(0.492 0.038 279.299),oklch(0.817 0.040 272.862));
+
+    --link: light-dark(oklch(0.559 0.226 262.087),oklch(0.766 0.111 259.885));
+}
+
+@media (prefers-color-scheme: light) {
+    body:has(.theme-checkbox:checked) {
+      color-scheme: dark;
+    }
+  }
+  
+@media (prefers-color-scheme: dark) {
+    body:has(.theme-checkbox:checked) {
+      color-scheme: light;
+    }
+}
+
 body {
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
+    background: var(--bg);
+    margin: 0px;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
 }
+body strong {
+    width: fit-content;
+    margin: 16px 0px 8px 0px;
+    color: var(--text);
+}
+
+body p {
+    width: fit-content;
+    color: var(--text);
+}
+
+body a{
+    color: var(--link);
+    text-decoration: none;
+}
+
+body a:hover{
+    text-decoration: underline;
+}
+
+footer {
+    width: 100%;
+    margin-top: 8px;
+    justify-items: center;
+    background: var(--secondary-bg);
+}
+
+main {
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    min-width: 0;
+}
+
+.activity-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.theme-checkbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.theme-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--secondary-bg);
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 5px;
+  z-index: 10;
+}
+
 .month-sheet {
     display: flex;
     position: relative;
@@ -11,6 +104,7 @@ body {
 
 .month-label {
     position: absolute;
+    color: var(--secondary-text)
 }
 
 .activity-sheet {
@@ -27,13 +121,16 @@ body {
 .popover {
     flex-direction: column;
     max-height: 450px;
+    background: var(--secondary-bg);
     max-width: 300px;
     overflow: hidden;
     gap: 3px;
     position-area: bottom;
     margin: 0;
+    padding: 8px;
     inset: auto;
-    border: 0px;
+    border: black 1px solid;
+    border-radius: 8px;
 }
 
 .popover:popover-open {

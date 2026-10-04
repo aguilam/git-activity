@@ -26,7 +26,6 @@ func diagramBuilder(from time.Time, to time.Time, datedCommits map[string][]data
 			weekCounter++
 			activity.Weeks = append(activity.Weeks, data.Week{})
 		}
-
 		nextWeekMonth := int(weekStart.AddDate(0, 0, 7).Month())
 		if currentMonth != lastMonth && nextWeekMonth == currentMonth {
 			lastMonth = currentMonth
